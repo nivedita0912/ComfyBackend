@@ -3,13 +3,13 @@ import User from "@/model/user";
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/connectToDB";
 import bcrypt from "bcrypt";
-import { generateToken } from "@/lib/tokenFuncions";
+import { generateToken } from "@/lib/tokenFunctions";
 
 export async function POST(req: NextRequest) {
     const { username, email, password } = await req.json();
 
     try {
-        if (!username ||  !email || !password) {
+        if (!username || !email || !password) {
 
             return NextResponse.json(
                 { success: false, message: "All values are required" },
@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
             )
         }
         await connectDB();
-        const checkUser = await User.findOne({email});
+        const checkUser = await User.findOne({ email });
         if (checkUser) {
             return NextResponse.json(
                 { success: false, message: "Already Exist with this email" },
@@ -34,14 +34,24 @@ export async function POST(req: NextRequest) {
         const token = generateToken({
             id: newUser._id.toString(),
             email,
-            
-        });
-        return NextResponse.json(
-            { success: true, newUser, "Token":token },
-            { status: 200 },
-            
-        )
 
+        });
+
+        const response = NextResponse.json(
+            { success: true, newUser },
+            { status: 200 },
+
+        )
+        response.cookies.set({
+            name: "token",
+            value: token,
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
+            maxAge: 60 * 60 * 24 * 7,
+            path: "/"
+        });
+        return response;
     } catch (error) {
         console.log(error);
         return NextResponse.json(
