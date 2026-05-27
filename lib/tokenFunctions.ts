@@ -17,7 +17,6 @@ if (!JWT_SECRET) {
 export interface TokenPayload {
    id: string;
    email: string;
-   plan?: string;
 }
 
 // GENERATE TOKEN
@@ -25,14 +24,14 @@ export interface TokenPayload {
 export function generateToken({
    id,
    email,
-   plan,
+   
 }: TokenPayload): string {
 
    return jwt.sign(
       {
          id,
          email,
-         plan,
+   
       },
       JWT_SECRET,
       {

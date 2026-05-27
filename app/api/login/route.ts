@@ -2,7 +2,8 @@ import User from "@/model/user";
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/connectToDB";
 import bcrypt from "bcrypt";
-import { generateToken } from "@/lib/tokenFuncions";
+import { generateToken } from "@/lib/tokenFunctions";
+
 
 export async function POST(req: NextRequest) {
     const { email, password } = await req.json();
@@ -34,10 +35,29 @@ export async function POST(req: NextRequest) {
                 email: checkUser.email,
                 id: checkUser._id
             };
-            return NextResponse.json(
-                { success: true, checkedUser, "Token": token },
-                { status: 200 },
-            )
+
+            const response =
+                NextResponse.json(
+                    {
+                        success: true,
+                        checkedUser,
+                    },
+                    {
+                        status: 200,
+                    }
+                );
+
+            response.cookies.set({
+                name: "token",
+                value: token,
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "strict",
+                maxAge: 60 * 60 * 24 * 7,
+                path: "/",
+            });
+
+            return response;
         }
         else {
             return NextResponse.json(
