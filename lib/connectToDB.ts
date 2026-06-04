@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { Noto_Sans_Tamil_Supplement } from "next/font/google";
 
 const MONGO_URI = process.env.MONGODB_URI as string;
 

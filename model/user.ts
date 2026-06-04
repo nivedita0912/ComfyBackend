@@ -5,8 +5,9 @@ export interface IUser {
    password: string;
    imageUrl?: string;
    projects: mongoose.Types.ObjectId[];
-   createdAt: number;
-   updatedAt: number;
+   createdAt: Date;
+   updatedAt: Date;
+   role: string
 }
 
 const userSchema =
@@ -14,6 +15,12 @@ const userSchema =
       username: {
          type: String,
          required: true,
+      },
+      role: {
+         enum: ["user", "admin"],
+         type: String,
+         default: "user",
+         required: true
       },
       email: {
          type: String,
@@ -35,11 +42,11 @@ const userSchema =
          }
       ],
       createdAt: {
-         type: Number,
+         type: Date,
          default: Date.now,
       },
       updatedAt: {
-         type: Number,
+         type: Date,
          default: Date.now
       }
    });
