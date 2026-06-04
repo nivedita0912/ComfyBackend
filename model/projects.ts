@@ -11,8 +11,8 @@ export interface IProjects {
    canvaState: number,
    activeTransformations: string[];
    backgroundRemoved: boolean;
-   createdAt: number;
-   updatedAt: number;
+   createdAt: Date;
+   updatedAt: Date;
 }
 const projectSchema =
    new mongoose.Schema({

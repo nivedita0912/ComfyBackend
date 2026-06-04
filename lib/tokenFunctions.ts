@@ -1,53 +1,39 @@
 import jwt from "jsonwebtoken";
-
-// ENV VARIABLE
-
+interface DecodeToken {
+   id: string,
+   email: string,
+   role: string,
+   iat: number,
+}
 const JWT_SECRET =
    process.env.JWT_SECRET as string;
-
 if (!JWT_SECRET) {
-
    throw new Error(
       "JWT_SECRET missing in .env.local"
    );
 }
-
-// TOKEN PAYLOAD TYPE
-
 export interface TokenPayload {
    id: string;
-   email: string;
+   role: string
 }
-
-// GENERATE TOKEN
-
-export function generateToken({
-   id,
-   email,
-   
-}: TokenPayload): string {
-
-   return jwt.sign(
-      {
-         id,
-         email,
-   
-      },
+export function generateToken({ id,role }: TokenPayload): string {
+   return jwt.sign({ id, role },
       JWT_SECRET,
       {
          expiresIn: "7d",
       }
    );
 }
-
-// VERIFY TOKEN
-
 export function verifyToken(
    token: string
-): TokenPayload {
+): DecodeToken | null {
 
-   return jwt.verify(
-      token,
-      JWT_SECRET
-   ) as TokenPayload;
+   try {
+      return jwt.verify(
+         token,
+         JWT_SECRET
+      ) as DecodeToken;
+   } catch {
+      return null;
+   }
 }

@@ -6,7 +6,7 @@ import bcrypt from "bcrypt";
 import { generateToken } from "@/lib/tokenFunctions";
 
 export async function POST(req: NextRequest) {
-    const { username, email, password } = await req.json();
+    const { username, email, password, role } = await req.json();
 
     try {
         if (!username || !email || !password) {
@@ -24,18 +24,19 @@ export async function POST(req: NextRequest) {
                 { status: 400 }
             )
         }
+    
 
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = await User.create({
             username,
             email,
+            role,
             password: hashedPassword
         })
         const token = generateToken({
             id: newUser._id.toString(),
-            email,
-
-        });
+            role:newUser.role
+});
 
         const response = NextResponse.json(
             { success: true, newUser },
@@ -47,7 +48,7 @@ export async function POST(req: NextRequest) {
             value: token,
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
-            sameSite: "strict",
+            sameSite: "lax",
             maxAge: 60 * 60 * 24 * 7,
             path: "/"
         });

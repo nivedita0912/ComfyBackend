@@ -6,7 +6,7 @@ import { generateToken } from "@/lib/tokenFunctions";
 
 
 export async function POST(req: NextRequest) {
-    const { email, password } = await req.json();
+    const { email, password, role } = await req.json();
 
     try {
         if (!email || !password) {
@@ -28,12 +28,13 @@ export async function POST(req: NextRequest) {
         if (hashedPassword) {
             const token = generateToken({
                 id: checkUser._id.toString(),
-                email
+                role: checkUser.role
             });
             const checkedUser = {
                 username: checkUser.username,
                 email: checkUser.email,
-                id: checkUser._id
+                id: checkUser._id,
+                role:checkUser.role
             };
 
             const response =
@@ -52,7 +53,7 @@ export async function POST(req: NextRequest) {
                 value: token,
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
-                sameSite: "strict",
+                sameSite: "lax",
                 maxAge: 60 * 60 * 24 * 7,
                 path: "/",
             });
