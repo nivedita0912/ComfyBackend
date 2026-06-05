@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const origin = process.env.NODE_ENV === "production"
-    ? "https://your-vercel-app.vercel.app"
+    ? "https://comfy-brown-xi.vercel.app"
     : "http://localhost:3000";
 
 export function middleware(request: NextRequest) {
